@@ -1,0 +1,21 @@
+---
+title: "Period 2  - Gene-wise testing in depth, including multiple testing"
+author: "Levi Waldron"
+date: "2/19/2018"
+output: html_document
+---
+
+
+##  Differential expression analysis with edgeR
+
+##  Comparison of edgeR / DESeq2
+
+##  Hypothesis testing for count data
+
+##  Identifying and correcting for batch effects
+
+##  Small samples, large samples, and the Central Limit Theorem
+
+##  Approaches to Multiple Hypothesis Testing correction
+
+##  Visualizing differentially expressed genes/transcripts

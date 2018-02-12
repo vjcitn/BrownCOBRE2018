@@ -1,0 +1,16 @@
+---
+title: "Period 3 - Gene set analysis"
+author: "Ludwig Geistlinger"
+date: "2/19/2018"
+output: html_document
+---
+
+##  Competitive and self-contained null hypotheses
+
+##  Over-representation analysis vs. gene set enrichment analysis
+
+##  Resources: GO, KEGG, MSigDb
+
+##  network-based enrichment analysis
+
+##  genomic region enrichment

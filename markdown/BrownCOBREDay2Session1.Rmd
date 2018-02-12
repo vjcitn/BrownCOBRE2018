@@ -1,0 +1,19 @@
+---
+title: "Period 1 -  Standard analyses for RNA seq data"
+author: "Levi Waldron"
+date: "2/19/2018"
+output: html_document
+---
+
+
+##  Approaches to processing raw data: alignment vs. alignment-free methods
+
+##  Quality control
+
+##  Annotating and importing expression counts
+
+##  Exploratory data analysis: multi-dimensional scaling (MDS) plot, mean-difference (MD) plots
+
+##  Model formulae and design matrices
+
+##  Assessing model fit and dispersion

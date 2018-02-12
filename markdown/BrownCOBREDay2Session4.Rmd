@@ -1,0 +1,15 @@
+---
+title: "Period 4 -  Analyses of ChIP Seq data"
+author: "Levi Waldron"
+date: "2/19/2018"
+output: html_document
+---
+
+
+##  Approaches to peak calling and merging
+
+##  Importing data into R
+
+##  Calling differential binding across samples with edgeR
+
+##  Annotating and plotting peaks

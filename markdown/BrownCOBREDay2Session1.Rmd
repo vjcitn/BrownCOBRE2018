@@ -7,7 +7,11 @@ output:
     toc: yes
 ---
 
-This workflow draws quotes and materials directly from https://www.bioconductor.org/help/workflows/rnaseqGene/
+# Abstract
+
+This workshop summarizes the main approaches to analyzing sequencing data to obtain per-gene count data, but does not go through how to do it explicitly. It demonstrates approaches to reading, annotating, and summarizing count data using [tximport](http://bioconductor.org/packages/) and various Bioconductor annotation resources, followed by unsupervised exploratory data analysis.
+
+This workshop uses quotes and materials from [RNA-seq workflow: gene-level exploratory analysis and differential expression](https://www.bioconductor.org/help/workflows/rnaseqGene/) by Love, Anders, Kim, and Huber.
 
 #  Approaches to processing raw data: alignment vs. alignment-free methods
 
@@ -175,7 +179,7 @@ So wherever you get your gene models from, you can convert it to a `TxDb` and us
 
 Finally, however you created your transcript to gene map, you can use it to summarize transcripts to genes:
 ```{r}
-txi.sum <- summarizeToGene(txi.tx, tx2gene)
+txi.sum <- summarizeToGene(txi, tx2gene)
 ```
 
 # The SummarizedExperiment object for representing experimental data
@@ -226,32 +230,29 @@ colData(airway)
 
 Create your own *SummarizedExperiment* and *RangedSummarizedExperiment* objects using the examples in `?SummarizedExperiment`. *SummarizedExperiment* objects can be the starting point for many analyses.
 
-## Branching point
-
-At this point, we have counted the fragments which overlap the genes
-in the gene model we specified. This is a branching point where we
-could use a variety of Bioconductor packages for exploration and
-differential expression of the count data, including:
-* [DESeq2](http://www.bioconductor.org/packages/DESeq2)
-* [edgeR](http://www.bioconductor.org/packages/edgeR)
-* [limma](http://www.bioconductor.org/packages/limma)
-* [DSS](http://www.bioconductor.org/packages/EBSeq)
-* [baySeq](http://www.bioconductor.org/packages/baySeq)
-
-[Schurch *et al.* 2016](https://www.ncbi.nlm.nih.gov/pmc/articles/pmid/27022035/) compared performance of different statistical methods
-for RNA-seq using a large number of biological replicates and can help
-users to decide which tools make sense to use, and how many
-biological replicates are necessary to obtain a certain sensitivity. It is worth noting that the larger your sample size, the less it matters which tool you use, owing to the Central Limit Theorum. 
-
-We will continue using [DESeq2](http://www.bioconductor.org/packages/DESeq2), starting from the 
-*SummarizedExperiment* object.
-
 #  Exploratory data analysis
+
+## Standardization / transformation of count data for visual exploration
+
+Features (e.g. genes) are typically "standardized": 
+ * because the differences in overall levels between features are often not due to biological effects but technical ones, *e.g.* GC bias, PCR amplification efficiency, ...
+ * because we don't want a few very high-variance genes to dominate the distance (a judgement call)
+
+Standardization traditionally meant converting to z-score:
+
+$$x_{gi} \leftarrow \frac{(x_{gi} - \bar{x}_g)}{s_g}$$     
+
+But `DESeq2` and `edgeR` provide their own RNA-seq specific standardization methods.
+
+We will use standardization for the purposes of visualization below, but for statistical testing in the next period, we will go back to the original count data 
+as required by the statistical procedures used.
+
+## Exploring the airway dataset
 
 Once we have our fully annotated *SummarizedExperiment* object,
 we can construct a *DESeqDataSet* object from it that will then form
 the starting point of the analysis.
-We add an appropriate design for the analysis:
+We add an appropriate design for the analysis (more on model formulae in the next period):
 
 ```{r}
 library("DESeq2")
@@ -261,19 +262,9 @@ library("DESeq2")
 dds <- DESeqDataSet(airway, design = ~ cell + dex)
 ```
 
-# Exploratory analysis and visualization
-
-There are two separate paths in this workflow; the one we will
-see first involves *transformations of the counts*
-in order to visually explore sample relationships.
-In the second part, we will go back to the original raw counts
-for *statistical testing*. This is critical because
-the statistical testing methods rely on original count data
-(not scaled or transformed) for calculating the precision of measurements. 
-
 ## Pre-filtering the dataset
 
-Our count matrix with our *DESeqDataSet* contains many rows with only
+Our count matrix contains many rows with only
 zeros, and additionally many rows with only a few fragments total. In
 order to reduce the size of the object, and to increase the speed of
 our functions, we can remove the rows that have no or nearly no
@@ -288,6 +279,10 @@ nrow(dds)
 dds <- dds[ rowSums(counts(dds)) > 1, ]
 nrow(dds)
 ```
+
+**Note**: For differential expression analysis later, filtering is 
+allowable but not necessary if using "Independent Hypothesis Weighting",
+as is the default behavior of `DESeq2`.
 
 ## The rlog and variance stabilizing transformations
 
@@ -429,7 +424,40 @@ rlog transform and VST compress differences for the low count genes
 for which the data provide little information about differential
 expression.
 
-## Sample distances
+## Boxplots of transformed distributions
+
+Boxplots of the count distributions in each sample are a good way to understand the effects these transformations have.
+
+```{r}
+par(mfrow=c(1,3))
+boxplot(log2(assay(dds)+1), las=2, main="log2(x+1)")
+boxplot(assay(rld), las=2, main="rld")
+boxplot(assay(vsd), las=2, main="vsd")
+```
+
+# Sample distances
+
+## The importance of distances
+
+High-dimensional data are complex and impossible to visualize in raw form. They represent
+thousands of dimensions, but we can only visualize 2-3.
+
+Distances can simplify thousands of dimensions, but encompass assumptions about 
+what kinds of differences are important.
+
+<center>
+<img src="animals.png" alt="animals" align="middle" style="height: 350px;">
+</center>
+
+All clustering and classification of samples and/or genes involves
+combining or identifying objects that are close or similar. Distances 
+or similarities are mathematical representations of what we mean by 
+close or similar. The choice of distance is important, and 
+is subject-matter specific.
+
+See: http://master.bioconductor.org/help/course-materials/2002/Summer02Course/Distance/distance.pdf
+
+## Distances for exploratory RNA-seq data analysis
 
 A useful first step in an RNA-seq analysis is often to assess overall
 similarity between samples: Which samples are similar to each other,
@@ -449,7 +477,7 @@ sampleDists
 ```
 
 We visualize the distances in a heatmap in a figure below, using the function
-*pheatmap* from the `r CRANpkg("pheatmap")` package.
+*pheatmap* from the [pheatmap](https://cran.r-project.org/web/packages/pheatmap/index.html) package.
 
 ```{r}
 library(pheatmap)
@@ -464,7 +492,7 @@ Otherwise the *pheatmap* function would assume that the matrix contains
 the data values themselves, and would calculate distances between the
 rows/columns of the distance matrix, which is not desired.
 We also manually specify a blue color palette using the
-*colorRampPalette* function from the `r CRANpkg("RColorBrewer")` package.
+*colorRampPalette* function from the [RColorBrewer](https://cran.r-project.org/web/packages/RColorBrewer/index.html) package.
 
 ```{r distheatmap, fig.width = 6.1, fig.height = 4.5}
 sampleDistMatrix <- as.matrix( sampleDists )
@@ -485,7 +513,7 @@ that we have all this information in view when looking at the heatmap.
 
 Another option for calculating sample distances is to use the
 Poisson Distance, implemented in the
-*PoiClaClu* CRAN package.
+[PoiClaClu](https://cran.r-project.org/web/packages/PoiClaClu/index.html) CRAN package.
 This measure of dissimilarity between counts
 also takes the inherent variance
 structure of counts into consideration when calculating the distances
@@ -498,7 +526,7 @@ library(PoiClaClu)
 poisd <- PoissonDistance(t(counts(dds)))
 ```
 
-We plot the heatmap in a Figure below.
+We plot the heatmap below.
 
 ```{r poisdistheatmap, fig.width = 6.1, fig.height = 4.5}
 samplePoisDistMatrix <- as.matrix( poisd$dd )
@@ -540,7 +568,7 @@ Here, we have used the function *plotPCA* that comes with *DESeq2*.
 The two terms specified by `intgroup` are the interesting groups for
 labeling the samples; they tell the function to use them to choose
 colors. We can also build the PCA plot from scratch using the
-`r CRANpkg("ggplot2")` package [@Wickham2009Ggplot2].
+[ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html).
 This is done by asking the *plotPCA* function
 to return the data used for plotting rather than building the plot.
 See the *ggplot2* [documentation](http://docs.ggplot2.org/current/)
@@ -602,7 +630,3 @@ ggplot(mdsPois, aes(x = `1`, y = `2`, color = dex, shape = cell)) +
 ```
 
 **MDS plot using the *Poisson Distance*.**
-
-% Move differential expression to session two
-% #  Model formulae and design matrices
-% #  Assessing model fit and dispersion

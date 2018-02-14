@@ -4,8 +4,13 @@ author: "Levi Waldron"
 date: "2/19/2018"
 output: 
   html_document: 
+    number_sections: yes
     toc: yes
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache=TRUE)
+```
 
 # Abstract
 
@@ -203,6 +208,7 @@ exonsBy(txdb)
 Some exploratory analysis of a demo `RangedSummarizedExperiment`:
 ```{r}
 library(airway)
+data(airway)
 airway
 dim(airway)
 assayNames(airway)

@@ -4,6 +4,7 @@ author: "Levi Waldron"
 date: "2/19/2018"
 output: 
   html_document: 
+    number_sections: yes
     toc: yes
 ---
 
@@ -11,6 +12,10 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, cache=TRUE)
 ```
+
+# Abstract
+
+This session covers some theory and a workflow for differential expression hypothesis testing, visualization, and batch correction.
 
 # Differential abundance estimation
 
@@ -349,9 +354,8 @@ abline(v=2, col="red", lw=2)
     + n >= 30: skew and outliers are OK
     + n > 500: even extreme population distributions
 
-### CLT 3: large samples (cont'd)
 
-* Example: an extremely skewed (log-normal) distribution:
+*Example*: an extremely skewed (log-normal) distribution:
 
 ```{r, echo=FALSE, fig.height=4}
 par(mfrow=c(1,3))

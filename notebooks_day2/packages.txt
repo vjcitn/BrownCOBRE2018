@@ -4,11 +4,13 @@ AnnotationFilter
 AnnotationHub
 BSgenome
 Biobase
+BiocFileCache
 BiocGenerics
 BiocParallel
 Biostrings
 DESeq2
 DelayedArray
+DiffBind
 EnrichmentBrowser
 EnsDb.Hsapiens.v86
 GenomeInfoDb
@@ -24,6 +26,8 @@ TxDb.Mmusculus.UCSC.mm10.knownGene
 XVector
 airway
 base
+bindrcpp
+dbplyr
 dplyr
 edgeR
 ensembldb

@@ -58,7 +58,7 @@ and `"quant.sf"`.
 ```{r}
 samples <- read.table(file.path(datadir, "samples.txt"), header=TRUE)
 samples
-files <- file.path(datadir, "salmon", samples$run, "quant.sf")
+files <- file.path(datadir, "salmon", samples$run, "quant.sf.gz")
 names(files) <- paste0("sample",1:6)
 all(file.exists(files))
 ```

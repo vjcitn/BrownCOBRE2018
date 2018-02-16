@@ -1,9 +1,9 @@
 ---
 title: "Period 2  - Gene-wise testing in depth, including multiple testing"
-author: "Levi Waldron"
 date: "2/19/2018"
 output: 
   html_document: 
+    keep_md: yes
     number_sections: yes
     toc: yes
 ---

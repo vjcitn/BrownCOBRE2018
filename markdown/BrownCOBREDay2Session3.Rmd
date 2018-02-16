@@ -2,7 +2,11 @@
 title: "Period 3 - Gene set analysis"
 author: "Ludwig Geistlinger"
 date: "2/19/2018"
-output: html_document
+output: 
+  html_document: 
+    keep_md: yes
+    number_sections: yes
+    toc: yes
 ---
 
 ```{r style, echo = FALSE, results = 'asis'}

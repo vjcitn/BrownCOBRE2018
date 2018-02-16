@@ -4,12 +4,14 @@ author: "Levi Waldron"
 date: "2/19/2018"
 output: 
   html_document: 
+    keep_md: yes
     number_sections: yes
     toc: yes
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, cache=TRUE)
+library(Homo.sapiens)
 ```
 
 # Abstract

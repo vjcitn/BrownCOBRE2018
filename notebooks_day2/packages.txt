@@ -29,6 +29,7 @@ MotifDb
 OrganismDbi
 PoiClaClu
 RColorBrewer
+RNAseqData.HNRNPC.bam.chr14
 Rsamtools
 S4Vectors
 SummarizedExperiment
